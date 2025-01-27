@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { StudentService } from '../student.service';
+import { StudentService } from '../services/student.service';
+import { StudentListComponent } from '../student-list/student-list.component';
 import { CommonModule } from '@angular/common';
+import { StudentFormService } from '../services/student-form.service';
+import { StudentEditService } from '../services/student-edit.service';
 
 @Component({
   selector: 'app-student',
-  imports : [CommonModule,ReactiveFormsModule],
+  imports :[ReactiveFormsModule,CommonModule,StudentListComponent],
   templateUrl: './student.component.html',
   styleUrls: ['./student.component.css']
 })
@@ -14,71 +17,65 @@ export class StudentComponent implements OnInit {
   studentForm: FormGroup;
   editingStudent: any = null;
 
-  constructor(private fb: FormBuilder, private studentService: StudentService) {
+  constructor(
+    private fb: FormBuilder, 
+    private studentService: StudentService,
+    private studentFormService: StudentFormService,
+     private studentEditService: StudentEditService)
+      {
     this.studentForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       rollNumber: ['', [Validators.required]],
       age: ['', [Validators.required, Validators.min(1)]],
       address: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['',[Validators.required,Validators.maxLength(10)]]  
+      phone: ['', [Validators.required, Validators.maxLength(10)]]
     });
-    
+    this.studentFormService.setStudentForm(this.studentForm);
   }
 
   ngOnInit(): void {
     this.loadStudents();
+    this.studentEditService.getEditingStudent().subscribe((student) => {
+      console.log('The student form data before to be edited :',student);     
+      if (student) {
+        this.editingStudent = student;
+        this.studentForm.setValue({
+          name: student.name,
+          rollNumber: student.rollNumber,
+          age: student.age,
+          address: student.address,
+          email: student.email,
+          phone: student.phone
+        });
+      }
+    });
   }
 
   loadStudents() {
-    this.studentService.getStudents().subscribe((data) => {
-      this.students = data;
-    });
+    this.studentService.getStudents();
   }
 
   onSubmit() {
-    console.log(this.studentForm.value); 
     if (this.studentForm.invalid) {
-      return; 
+      return;
     }
-  
+
     const student = this.studentForm.value;
-  
+
     if (this.editingStudent) {
-      console.log("Updating student", student);
-      this.studentService.updateStudent(this.editingStudent._id, student).subscribe((_updatedStudent) => {
+      this.studentService.updateStudent(this.editingStudent._id, student).subscribe(() => {
         this.loadStudents();
         this.studentForm.reset();
         this.editingStudent = null;
+        console.log('The student form data after the edit',student);
+        
       });
     } else {
-      console.log("Creating new student", student);
-
-      this.studentService.createStudent(student).subscribe((_newStudent) => {
+      this.studentService.createStudent(student).subscribe(() => {
         this.loadStudents();
         this.studentForm.reset();
       });
     }
-  }
-  
-  editStudent(student: any) {
-    this.editingStudent = student;
-    this.studentForm.setValue({
-      name: student.name,
-      rollNumber: student.rollNumber,
-      age: student.age,
-      address: student.address,
-      email: student.email,
-      phone: student.phone
-    });
-    this.studentForm.get('name')?.disable();     
-    this.studentForm.get('age')?.disable();      
-    this.studentForm.get('rollNumber')?.disable();
-  }
-
-  deleteStudent(id: string) {
-    this.studentService.deleteStudent(id).subscribe(() => {
-      this.loadStudents();
-    });
   }
 }

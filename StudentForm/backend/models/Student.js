@@ -20,7 +20,10 @@ const studentSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  phone: String,
+  phone:{
+    type : String,
+    required : true,
+  },
 });
 
 const Student = mongoose.model('Student', studentSchema);
