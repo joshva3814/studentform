@@ -1,0 +1,36 @@
+<div *ngIf="otherstudents.length > 0; else noStudents" class="container mt-5">
+    <h2 class="mb-4 text-center">Students List</h2>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="thead-dark">
+          <tr>
+            <th>Name</th>
+            <th>Roll Number</th>
+            <th>Age</th>
+            <th>Address</th>
+            <th>Email</th>
+            <th>Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let student of otherstudents" >
+            <td>{{ student.name }}</td>
+            <td>{{ student.rollNumber }}</td>
+            <td>{{ student.age }}</td>
+            <td>{{ student.address }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.phone }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <ng-template #noStudents>
+    <div class="container mt-5 text-center">
+      <div class="alert alert-warning" role="alert">
+        No students found.
+      </div>
+    </div>
+  </ng-template>
+  

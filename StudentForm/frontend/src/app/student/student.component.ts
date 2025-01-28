@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { StudentService } from '../services/student.service';
-import { StudentListComponent } from '../student-list/student-list.component';
 import { CommonModule } from '@angular/common';
 import { StudentFormService } from '../services/student-form.service';
 import { StudentEditService } from '../services/student-edit.service';
+import { StudlistComponent } from '../studlist/studlist.component';
+import { StudentListComponent } from '../student-list/student-list.component';
 
 @Component({
   selector: 'app-student',
-  imports :[ReactiveFormsModule,CommonModule,StudentListComponent],
+  imports :[ReactiveFormsModule,CommonModule,StudentListComponent,StudlistComponent],
   templateUrl: './student.component.html',
   styleUrls: ['./student.component.css']
 })
@@ -36,8 +37,7 @@ export class StudentComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStudents();
-    this.studentEditService.getEditingStudent().subscribe((student) => {
-      console.log('The student form data before to be edited :',student);     
+    this.studentEditService.getEditingStudent().subscribe((student) => {   
       if (student) {
         this.editingStudent = student;
         this.studentForm.setValue({
@@ -68,8 +68,6 @@ export class StudentComponent implements OnInit {
         this.loadStudents();
         this.studentForm.reset();
         this.editingStudent = null;
-        console.log('The student form data after the edit',student);
-        
       });
     } else {
       this.studentService.createStudent(student).subscribe(() => {

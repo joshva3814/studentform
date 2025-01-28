@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { StudentService } from '../services/student.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';  // Keep this import
 import { StudentFormService } from '../services/student-form.service';
-import { StudentEditService } from '../services//student-edit.service';
+import { StudentEditService } from '../services/student-edit.service';
 
 @Component({
   selector: 'app-student-list',
-  imports:[CommonModule],
+  imports: [CommonModule],  // Ensure only necessary modules are here
   templateUrl: './student-list.component.html',
   styleUrls: ['./student-list.component.css']
 })
@@ -18,16 +18,16 @@ export class StudentListComponent implements OnInit {
   constructor(
     private studentService: StudentService, 
     private studentFormService: StudentFormService,
-    private studentEditService: StudentEditService  ) 
-    {}
-  
+    private studentEditService: StudentEditService
+  ) {}
+
   ngOnInit(): void {
     this.studentService.students$.subscribe((students) => {
       this.students = students; 
     });
   }
 
-  editStudent(student: any) {
+  editStudent(student: any): void {
     this.studentFormService.updateFormValue({
       name: student.name,
       rollNumber: student.rollNumber,
@@ -39,7 +39,7 @@ export class StudentListComponent implements OnInit {
     this.studentEditService.setEditingStudent(student); 
   }
 
-  deleteStudent(id: string) {
+  deleteStudent(id: string): void {
     this.studentService.deleteStudent(id).subscribe(() => {
       this.studentService.getStudents();
     });
